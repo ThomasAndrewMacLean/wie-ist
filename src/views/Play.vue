@@ -80,6 +80,7 @@ h2 {
   );
   height: calc(100vh - 116px);
   display: flex;
+  background-color: #dbdbd8;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;

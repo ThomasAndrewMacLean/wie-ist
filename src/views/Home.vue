@@ -16,6 +16,8 @@ export default {
     url("../assets/camera-small.jpg") 1x,
     url("../assets/camera-medium.jpg") 2x
   );
+  background-color: #de832abf;
+
   height: calc(100vh - 116px);
   display: flex;
   justify-content: center;

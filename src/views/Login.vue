@@ -86,6 +86,7 @@ h2 {
     url("../assets/polaroids2-small.jpg") 1x,
     url("../assets/polaroids2-medium.jpg") 2x
   );
+  background-color: #cfad93;
   height: calc(100vh - 116px);
   display: flex;
   flex-direction: column;

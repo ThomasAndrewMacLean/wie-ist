@@ -10,6 +10,7 @@
     url("../assets/polaroids-small.jpg") 1x,
     url("../assets/polaroids-medium.jpg") 2x
   );
+  background-color: #dcebe8;
   height: calc(100vh - 116px);
   display: flex;
   justify-content: center;
