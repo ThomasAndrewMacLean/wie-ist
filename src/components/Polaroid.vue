@@ -1,6 +1,6 @@
 <template>
   <div class="border">
-    <canvas width="300" height="300" ref="canvas"></canvas>
+    <canvas width="250" height="250" ref="canvas"></canvas>
     <div ref="black" class="black"></div>
   </div>
 </template>
@@ -13,10 +13,11 @@ export default {
   watch: {
     picFile: function(file) {
       var canvas = this.$refs.canvas;
+      canvas.style.filter = "grayscale(0)";
       this.$refs.black.style.opacity = 0;
 
-      canvas.height = 300;
-      canvas.width = 300;
+      canvas.height = 250;
+      canvas.width = 250;
 
       getOrientation(file, orientation => {
         var ctx = canvas.getContext("2d");
@@ -125,6 +126,8 @@ export default {
   transition: opacity 1s ease-in;
 }
 canvas {
+  display: block;
   filter: grayscale(1);
+  transition: filter 1.7s ease-in;
 }
 </style>
