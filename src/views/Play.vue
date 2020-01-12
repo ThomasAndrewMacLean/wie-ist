@@ -1,29 +1,20 @@
 <template>
   <div class="play">
     <h2>Play {{ $route.params.roomid }}</h2>
-    <img v-if="uploadedPic" :src="uploadedPic" alt="" />
-
-    <form action="" @submit.prevent="uploadPic">
-      <label v-if="!uploadedPic" for="uploadPic">Take Picture</label>
-      <input
-        @change="previewFiles"
-        ref="myFiles"
-        type="file"
-        name="uploadPic"
-        id="uploadPic"
-      />
-      <input
-        id="submit-btn"
-        v-if="uploadedPic"
-        type="submit"
-        value="Save Picture"
-      />
+    <!-- <img v-if="uploadedPic" :src="uploadedPic" alt /> -->
+    <Polaroid :picFile="this.files[0]" />
+    <form action @submit.prevent="uploadPic">
+      <label for="uploadPic">Take Picture</label>
+      <input @change="previewFiles" ref="myFiles" type="file" name="uploadPic" id="uploadPic" />
+      <input id="submit-btn" v-if="uploadedPic" type="submit" value="Save Picture" />
     </form>
     <br />
   </div>
 </template>
 
 <script>
+import Polaroid from "../components/Polaroid";
+
 const toBase64 = file =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -35,10 +26,15 @@ const toBase64 = file =>
 export default {
   data() {
     return {
-      files: [],
-      uploadedPic: ""
+      files: []
     };
   },
+  computed: {
+    uploadedPic() {
+      return this.$store.getters.uploadPic;
+    }
+  },
+  components: { Polaroid },
   methods: {
     async uploadPic() {
       if (this.uploadedPic) {
@@ -60,7 +56,10 @@ export default {
     },
     async previewFiles() {
       this.files = this.$refs.myFiles.files;
-      this.uploadedPic = await toBase64(this.files[0]);
+      let base64UploadedPic = await toBase64(this.files[0]);
+      this.$store.dispatch("setUploadPic", {
+        uploadPic: base64UploadedPic
+      });
     }
   }
 };
@@ -101,6 +100,7 @@ label {
   font-size: inherit;
   font-family: inherit;
   color: inherit;
+  border: none;
   padding: 1rem;
   border-radius: 2rem;
   cursor: pointer;
