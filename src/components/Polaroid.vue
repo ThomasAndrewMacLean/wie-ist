@@ -2,6 +2,7 @@
   <div class="border">
     <canvas width="250" height="250" ref="canvas"></canvas>
     <div ref="black" class="black"></div>
+    <p class="marker">{{userName}}</p>
   </div>
 </template>
 
@@ -9,9 +10,10 @@
 import { getOrientation } from "../utils/getOrientation";
 
 export default {
-  props: ["picFile"],
+  props: ["picFile", "userName"],
   watch: {
     picFile: function(file) {
+      if (!file) return;
       var canvas = this.$refs.canvas;
       canvas.style.filter = "grayscale(0)";
       this.$refs.black.style.opacity = 0;
@@ -104,6 +106,28 @@ export default {
         }
       });
     }
+  },
+  methods: {
+    reset() {
+      this.$refs.black.style.opacity = 1;
+    },
+    async savePolaroid() {
+      let pic = this.$refs.canvas.toDataURL();
+      const rawResponse = await fetch(
+        "https://us-central1-wie-is-het-264722.cloudfunctions.net/savePicToBucket",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ pic })
+        }
+      );
+      const content = await rawResponse.json();
+
+      console.log(content);
+    }
   }
 };
 </script>
@@ -129,5 +153,14 @@ canvas {
   display: block;
   filter: grayscale(1);
   transition: filter 1.7s ease-in;
+}
+
+.marker {
+  position: absolute;
+  color: #312f2f;
+  font-size: 20px;
+  line-height: 4rem;
+  margin: 1rem auto;
+  width: 250px;
 }
 </style>

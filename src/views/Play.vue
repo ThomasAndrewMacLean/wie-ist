@@ -1,12 +1,27 @@
 <template>
   <div class="play">
     <h2>Play {{ $route.params.roomid }}</h2>
-    <!-- <img v-if="uploadedPic" :src="uploadedPic" alt /> -->
-    <Polaroid :picFile="this.files[0]" />
+    <Polaroid ref="polaroid" :userName="userName" :picFile="this.files[0]" />
     <form action @submit.prevent="uploadPic">
-      <label for="uploadPic">Take Picture</label>
-      <input @change="previewFiles" ref="myFiles" type="file" name="uploadPic" id="uploadPic" />
-      <input id="submit-btn" v-if="uploadedPic" type="submit" value="Save Picture" />
+      <label v-if="!showReset" @click="reset" for="uploadPic">Take Picture</label>
+      <input
+        @change="previewFiles"
+        accept="image/*"
+        ref="myFiles"
+        type="file"
+        name="uploadPic"
+        id="uploadPic"
+      />
+      <input
+        class="buttons"
+        @click="reset"
+        id="reset-btn"
+        v-if="showReset"
+        type="button"
+        value="Reset"
+      />
+
+      <input class="buttons" id="submit-btn" v-if="showReset" type="submit" value="Save Picture" />
     </form>
     <br />
   </div>
@@ -15,51 +30,64 @@
 <script>
 import Polaroid from "../components/Polaroid";
 
-const toBase64 = file =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
+// const toBase64 = file =>
+//   new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = error => reject(error);
+//   });
 
 export default {
   data() {
     return {
-      files: []
+      files: [],
+      showReset: false
     };
   },
   computed: {
     uploadedPic() {
       return this.$store.getters.uploadPic;
+    },
+    userName() {
+      return this.$store.getters.userName;
     }
   },
   components: { Polaroid },
   methods: {
+    reset() {
+      // set black background on polaroid and empty input file
+      this.$refs.polaroid.reset();
+      this.$refs.myFiles.value = "";
+      this.showReset = false;
+    },
     async uploadPic() {
-      if (this.uploadedPic) {
-        const rawResponse = await fetch(
-          "https://us-central1-wie-is-het-264722.cloudfunctions.net/savePicToBucket",
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ pic: this.uploadedPic })
-          }
-        );
-        const content = await rawResponse.json();
+      this.$refs.polaroid.savePolaroid();
 
-        console.log(content);
-      }
+      // if (this.uploadedPic) {
+      //   const rawResponse = await fetch(
+      //     "https://us-central1-wie-is-het-264722.cloudfunctions.net/savePicToBucket",
+      //     {
+      //       method: "POST",
+      //       headers: {
+      //         Accept: "application/json",
+      //         "Content-Type": "application/json"
+      //       },
+      //       body: JSON.stringify({ pic: this.uploadedPic })
+      //     }
+      //   );
+      //   const content = await rawResponse.json();
+
+      //   console.log(content);
+      // }
     },
     async previewFiles() {
       this.files = this.$refs.myFiles.files;
-      let base64UploadedPic = await toBase64(this.files[0]);
-      this.$store.dispatch("setUploadPic", {
-        uploadPic: base64UploadedPic
-      });
+      this.showReset = true;
+      //   let base64UploadedPic = await toBase64(this.files[0]);
+      //   this.$store.dispatch("setUploadPic", {
+      //     uploadPic: base64UploadedPic
+      //   });
     }
   }
 };
@@ -94,13 +122,15 @@ label {
   padding: 1rem;
   border-radius: 2rem;
   cursor: pointer;
+  border: 3px solid white;
 }
 #submit-btn {
   background: #d47b22;
   font-size: inherit;
   font-family: inherit;
+  border: 3px solid white;
+
   color: inherit;
-  border: none;
   padding: 1rem;
   border-radius: 2rem;
   cursor: pointer;
@@ -110,5 +140,11 @@ img {
   border-bottom: 4rem solid ghostwhite;
   background: whitesmoke;
   box-shadow: 0px 0px 6px 0px #00000045;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

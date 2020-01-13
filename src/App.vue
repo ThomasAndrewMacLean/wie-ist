@@ -48,6 +48,10 @@ export default {
   min-height: 40px;
 }
 
+.marker {
+  font-family: "Permanent Marker", cursive;
+}
+
 #nav a {
   font-weight: bold;
   color: #2c3e50;
