@@ -1,14 +1,18 @@
 <template>
     <div class="play">
         <h2>Play {{ $route.params.roomid }}</h2>
-        <Polaroid ref="polaroid" :userName="userName" :picFile="this.files[0]" />
-        <form action @submit.prevent="uploadPic">
+        <Polaroid ref="polaroid" :uploadedPic="uploadedPic" :userName="userName" :picFile="this.files[0]" />
+
+        <form v-if="!pictureSaved" action @submit.prevent="uploadPic">
             <label v-if="!showReset" @click="reset" for="uploadPic">Take Picture</label>
             <input @change="previewFiles" accept="image/*" ref="myFiles" type="file" name="uploadPic" id="uploadPic" />
-            <input class="buttons reset" @click="reset" id="reset-btn" v-if="showReset" type="button" value="Reset" />
+            <input class="buttons reset" @click="reset" id="reset-btn" v-if="showReset" type="button" value="Hmmm, ... no" />
 
             <input class="buttons" id="submit-btn" v-if="showReset" type="submit" value="Save Picture" />
         </form>
+        <div class="thanks" v-if="pictureSaved">
+            Thanks, pictures is saved! 📸
+        </div>
         <br />
     </div>
 </template>
@@ -37,6 +41,9 @@
             },
             userName() {
                 return this.$store.getters.userName;
+            },
+            pictureSaved() {
+                return this.$store.getters.pictureSaved;
             }
         },
         components: {
@@ -49,6 +56,7 @@
                 this.$refs.myFiles.value = "";
                 this.showReset = false;
             },
+
             async uploadPic() {
                 this.$refs.polaroid.savePolaroid();
 
@@ -145,5 +153,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .thanks {
+        background: #2c3e50;
+        padding: 1rem;
+        border-radius: 70px;
+        border: 2px solid;
     }
 </style>

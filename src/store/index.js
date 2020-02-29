@@ -8,7 +8,8 @@ export const store = new Vuex.Store({
     state: {
         userName: '',
         userPicture: '',
-        uploadPic: ''
+        uploadPic: '',
+        pictureSaved: false
     },
     mutations: {
         setUser(state, payload) {
@@ -17,6 +18,9 @@ export const store = new Vuex.Store({
         },
         setUploadPic(state, payload) {
             state.uploadPic = payload.uploadPic;
+        },
+        savePicture(state, payload) {
+            state.pictureSaved = payload;
         }
     },
     actions: {
@@ -25,6 +29,9 @@ export const store = new Vuex.Store({
         },
         setUploadPic(context, payload) {
             context.commit('setUploadPic', payload);
+        },
+        pictureSaved(context, payload) {
+            context.commit('savePicture', payload);
         }
     },
     getters: {
@@ -36,6 +43,9 @@ export const store = new Vuex.Store({
         },
         uploadPic(state) {
             return state.uploadPic;
+        },
+        pictureSaved(state) {
+            return state.pictureSaved;
         }
     },
     plugins: [createPersistedState({ storage: window.sessionStorage })]

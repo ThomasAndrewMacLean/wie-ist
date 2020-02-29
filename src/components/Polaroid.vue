@@ -1,6 +1,7 @@
 <template>
     <div class="border">
         <canvas width="250" height="250" ref="canvas"></canvas>
+
         <div ref="black" class="black"></div>
         <p class="marker">{{ userName }}</p>
     </div>
@@ -12,12 +13,27 @@
     } from "../utils/getOrientation";
 
     export default {
-        props: ["picFile", "userName"],
+        props: ["picFile", "userName", "uploadedPic"],
         data: function () {
             return {
                 saving: false,
                 saved: false
             };
+        },
+        mounted() {
+            if (this.uploadedPic) {
+                var canvas = this.$refs.canvas;
+
+                canvas.style.filter = "grayscale(0)";
+                this.$refs.black.style.opacity = 0;
+                var ctx = canvas.getContext("2d");
+
+                var image = new Image();
+                image.onload = function () {
+                    ctx.drawImage(image, 0, 0);
+                };
+                image.src = this.uploadedPic;
+            }
         },
         watch: {
             picFile: function (file) {
@@ -123,6 +139,9 @@
                 if (this.saving) return;
                 this.saving = true;
                 let pic = this.$refs.canvas.toDataURL();
+                this.$store.dispatch("setUploadPic", {
+                    uploadPic: pic
+                });
                 const rawResponse = await fetch(
                     "https://us-central1-wie-is-het-264722.cloudfunctions.net/savePicToBucket", {
                         method: "POST",
@@ -137,6 +156,7 @@
                 );
                 const content = await rawResponse.json();
                 this.saved = true;
+                this.$store.dispatch("pictureSaved", true);
                 console.log(content);
             }
         }
