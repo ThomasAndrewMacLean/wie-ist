@@ -32,13 +32,13 @@ export default {
           },
           body: JSON.stringify({
             assignment: this.assignment,
-            emails: this.emails
+            emails: this.emails.split("\n").map(x => x.trim())
           })
         }
       );
       const content = await rawResponse.json();
 
-      console.log(content);
+      console.log(content._path.segments[1]);
     }
   }
 };
@@ -54,8 +54,8 @@ form {
 }
 .home {
   background: -webkit-image-set(
-    url("../assets/camera-small.jpg") 1x,
-    url("../assets/camera-medium.jpg") 2x
+    url("../assets/camera-medium.jpg") 1x,
+    url("../assets/camera-large.jpg") 2x
   );
   background-color: #de832abf;
 
