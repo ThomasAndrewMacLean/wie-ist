@@ -77,6 +77,7 @@ export default {
             canvas.height = smallest;
             canvas.style.height = smallest;
 
+            alert(orientation);
             switch (orientation) {
               case 2:
                 ctx.translate(width, 0);

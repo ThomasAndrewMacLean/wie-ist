@@ -17,14 +17,6 @@
 <script>
 import Polaroid from "../components/Polaroid";
 
-// const toBase64 = file =>
-//   new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onload = () => resolve(reader.result);
-//     reader.onerror = error => reject(error);
-//   });
-
 export default {
   data() {
     return {
@@ -38,6 +30,24 @@ export default {
       ],
       players: ["thomas", "ann", "jeff", "felix", "otto", "jan"]
     };
+  },
+  async beforeMount() {
+    const rawResponse = await fetch(
+      "https://europe-west1-wie-is-het-264722.cloudfunctions.net/getPicturesAndNamesForRoom",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          roomId: this.$route.params.roomid,
+          token: sessionStorage.getItem("token")
+        })
+      }
+    );
+    const content = await rawResponse.json();
+    console.log(content);
   },
   computed: {},
   components: {
